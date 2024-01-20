@@ -1,21 +1,55 @@
-import speech_recognition as sr
-import os
+from datetime import datetime
+import speech_recognition as aa
+import pyttsx3
+import pywhatkit
+import datetime
+import wikipedia
 
-def say(text):
-    os.system(f"say {text}")
+listener= aa.Recognizer()
 
-def takeCommand():
-    r = sr.Recognizer()
-    with sr.Microphone() as source:
-        r.pause_threshold = 1
-        audio = r.listen(source)
-        query = r.recognize_google(audio, language="en-in")
-        print(f"user said: {query}")
-        return query
+machine=pyttsx3.init()
+def talk(text):
+    machine.say(text)
+machine.runAndWait()
 
-if __name__ == "__main__":
-    print("Jarvis")
-    say("Hello, I am Jarvis A.I")
-    print("Listening...")
-    text = takeCommand()
-    say(text)
+def input_instruction():
+    global instruction
+    try:
+        with aa.Microphone() as origin:
+            print("listening")
+            speech=listener.listen(origin)
+            instruction= listener.recognize_google(speech)
+            instruction=instruction.lower()
+            if "Jarvis" in instruction:
+                instruction=instruction.replace("Jarvis","")
+                print(instruction)
+            
+    except:
+        pass
+    return instruction
+
+def play_Jarvis():
+    instruction=input_instruction()
+    print(instruction)
+    if "play" in instruction:
+        song=instruction.replace('play',"")
+        talk("playing"+song)
+        pywhatkit.playonyt(song)
+    elif "time" in instruction:
+        time=datetime.datetime.now().strftime("%I:%Mp")
+        talk("Current time"+time)
+    elif "date" in instruction:
+        date=datetime.datetime.now().strftime("%d / %m / %Y")
+        talk("Todays date"+date)
+    elif "how are you" in instruction:
+        talk("I am fine, how about you?")
+    elif "what is  your name" in instruction:
+        talk("I am Jarvis, what can I do for you?")
+    elif "who is " in instruction:
+        human=instruction.replace("who is ","")
+        info=wikipedia.summary(human,1)
+        print(info)
+        talk(info)
+    else:
+        talk("PLease repeat")
+play_Jarvis
